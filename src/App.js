@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { uiActions } from './store/ui-slice';
+import { sendCartData } from './store/cart-slice';
 
 import Notification from './components/UI/Notification';
 import Cart from './components/Cart/Cart';
@@ -17,53 +17,12 @@ function App() {
   const notification = useSelector((state) => state.ui.notification);
 
   useEffect(() => {
-    const sendCartData = async () => {
-      dispatch(
-        uiActions.showNotification({
-          status: 'pending',
-          title: 'Sending...',
-          message: 'Sending cart data!',
-        })
-      );
-
-      const response = await fetch(
-        'https://react-http-32615-default-rtdb.europe-west1.firebasedatabase.app/cart.json',
-        // 'https://react-http-32615-default-rtdb.europe-west1.firebasedatabase.app/cart',
-        // // ^ error - testing purposes
-        {
-          method: 'PUT',
-          body: JSON.stringify(cart),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Sending cart data failed.');
-      }
-
-      dispatch(
-        uiActions.showNotification({
-          status: 'success',
-          title: 'Success!',
-          message: 'Sent cart data successfully!',
-        })
-      );
-    };
-
     if (isInitial) {
       isInitial = false;
       return;
     }
-    // ^ Prevent cart data being send when the application is started
 
-    sendCartData().catch((error) => {
-      dispatch(
-        uiActions.showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Sending cart data failed!',
-        })
-      );
-    });
+    dispatch(sendCartData(cart));
   }, [cart, dispatch]);
 
   return (
